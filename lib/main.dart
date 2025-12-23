@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
-import 'services/supabase_service.dart';
-import 'screens/splash_screen.dart';
-import 'services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+import 'Screens/splash_screen.dart';
+import 'services/supabase_service.dart';
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
     url: SupabaseService.supabaseUrl,
     anonKey: SupabaseService.supabaseKey,
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
   runApp(const MyApp());
