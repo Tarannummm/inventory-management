@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'Screens/signup_screen.dart';
 
 import 'Screens/splash_screen.dart';
 import 'services/supabase_service.dart';
@@ -26,7 +27,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Inventory App',
-      home: SplashScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/signup': (context) => SignupScreen(),
+      },
     );
   }
 }
