@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
+import '../reusable_widgets/inventory_item_tile.dart';
+import 'profile_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
   @override
@@ -20,7 +22,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     fetchItems();
   }
 
-  // READ ITEMS
+  // READ
   Future<void> fetchItems() async {
     final data = await SupabaseService.client
         .from('inventory_items')
@@ -32,7 +34,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
     });
   }
 
-  // ADD ITEM
+  // CREATE
   Future<void> addItem() async {
     await SupabaseService.client.from('inventory_items').insert({
       'item_name': nameController.text.trim(),
@@ -46,11 +48,18 @@ class _InventoryScreenState extends State<InventoryScreen> {
     quantityController.clear();
     priceController.clear();
 
-    fetchItems(); // refresh list
+    fetchItems();
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Item added successfully')),
     );
+  }
+
+  // DELETE ✅ (THIS MUST BE HERE)
+  Future<void> deleteItem(String id) async {
+    await SupabaseService.client.from('inventory_items').delete().eq('id', id);
+
+    fetchItems();
   }
 
   @override
@@ -58,12 +67,22 @@ class _InventoryScreenState extends State<InventoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Inventory Management'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.person),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ProfileScreen()),
+              );
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // INPUT FIELDS
             TextField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Item Name'),
@@ -82,17 +101,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
               decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: TextInputType.number,
             ),
-
             const SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: addItem,
               child: const Text('Add Item'),
             ),
-
             const SizedBox(height: 30),
-
-            // ITEM LIST
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
@@ -100,13 +114,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
               itemBuilder: (context, index) {
                 final item = inventoryItems[index];
 
-                return Card(
-                  child: ListTile(
-                    title: Text(item['item_name']),
-                    subtitle: Text(
-                      'Category: ${item['category']} | Qty: ${item['quantity']} | Price: ${item['price']}',
-                    ),
-                  ),
+                return InventoryItemTile(
+                  name: item['item_name'],
+                  category: item['category'],
+                  quantity: item['quantity'],
+                  price: item['price'],
+                  onDelete: () => deleteItem(item['id'].toString()),
                 );
               },
             ),
