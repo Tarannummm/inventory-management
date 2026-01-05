@@ -6,6 +6,7 @@ class InventoryItemTile extends StatelessWidget {
   final int quantity;
   final int price;
   final VoidCallback onDelete;
+  final VoidCallback onEdit;
 
   const InventoryItemTile({
     super.key,
@@ -14,19 +15,44 @@ class InventoryItemTile extends StatelessWidget {
     required this.quantity,
     required this.price,
     required this.onDelete,
+    required this.onEdit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bool lowStock = quantity <= 5;
+
     return Card(
+      elevation: 3,
+      margin: const EdgeInsets.symmetric(vertical: 8),
       child: ListTile(
-        title: Text(name),
-        subtitle: Text(
-          'Category: $category | Qty: $quantity | Price: $price',
+        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Category: $category'),
+            Text('Quantity: $quantity'),
+            Text('Price: ৳$price'),
+            if (lowStock)
+              const Text(
+                '⚠ Low Stock',
+                style:
+                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+          ],
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete, color: Colors.red),
-          onPressed: onDelete,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: onEdit,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red),
+              onPressed: onDelete,
+            ),
+          ],
         ),
       ),
     );

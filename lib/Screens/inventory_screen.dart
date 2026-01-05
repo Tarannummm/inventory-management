@@ -4,6 +4,8 @@ import '../reusable_widgets/inventory_item_tile.dart';
 import 'profile_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
+  const InventoryScreen({super.key});
+
   @override
   State<InventoryScreen> createState() => _InventoryScreenState();
 }
@@ -15,6 +17,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   final TextEditingController priceController = TextEditingController();
 
   List inventoryItems = [];
+  List filteredItems = []; // 🔍 for search
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     setState(() {
       inventoryItems = data;
+      filteredItems = data; // important for search
     });
   }
 
@@ -43,11 +47,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
       'price': int.parse(priceController.text),
     });
 
-    nameController.clear();
-    categoryController.clear();
-    quantityController.clear();
-    priceController.clear();
-
+    clearFields();
     fetchItems();
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -55,11 +55,87 @@ class _InventoryScreenState extends State<InventoryScreen> {
     );
   }
 
-  // DELETE ✅ (THIS MUST BE HERE)
+  // DELETE
   Future<void> deleteItem(String id) async {
     await SupabaseService.client.from('inventory_items').delete().eq('id', id);
-
     fetchItems();
+  }
+
+  // UPDATE
+  Future<void> updateItem(String id) async {
+    await SupabaseService.client.from('inventory_items').update({
+      'item_name': nameController.text.trim(),
+      'category': categoryController.text.trim(),
+      'quantity': int.parse(quantityController.text),
+      'price': int.parse(priceController.text),
+    }).eq('id', id);
+
+    clearFields();
+    fetchItems();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Item updated successfully')),
+    );
+  }
+
+  void clearFields() {
+    nameController.clear();
+    categoryController.clear();
+    quantityController.clear();
+    priceController.clear();
+  }
+
+  // EDIT DIALOG
+  void showEditDialog(Map item) {
+    nameController.text = item['item_name'];
+    categoryController.text = item['category'];
+    quantityController.text = item['quantity'].toString();
+    priceController.text = item['price'].toString();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Item'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Item Name'),
+              ),
+              TextField(
+                controller: categoryController,
+                decoration: const InputDecoration(labelText: 'Category'),
+              ),
+              TextField(
+                controller: quantityController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Quantity'),
+              ),
+              TextField(
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Price'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                updateItem(item['id'].toString());
+                Navigator.pop(context);
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -83,6 +159,27 @@ class _InventoryScreenState extends State<InventoryScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
+            // 🔍 SEARCH BAR
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search Item',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  filteredItems = inventoryItems
+                      .where((item) => item['item_name']
+                          .toString()
+                          .toLowerCase()
+                          .contains(value.toLowerCase()))
+                      .toList();
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // ADD ITEM FIELDS
             TextField(
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Item Name'),
@@ -93,13 +190,13 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
             TextField(
               controller: quantityController,
-              decoration: const InputDecoration(labelText: 'Quantity'),
               keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Quantity'),
             ),
             TextField(
               controller: priceController,
-              decoration: const InputDecoration(labelText: 'Price'),
               keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Price'),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
@@ -107,19 +204,21 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: const Text('Add Item'),
             ),
             const SizedBox(height: 30),
+
+            // INVENTORY LIST
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: inventoryItems.length,
+              itemCount: filteredItems.length,
               itemBuilder: (context, index) {
-                final item = inventoryItems[index];
-
+                final item = filteredItems[index];
                 return InventoryItemTile(
                   name: item['item_name'],
                   category: item['category'],
                   quantity: item['quantity'],
                   price: item['price'],
                   onDelete: () => deleteItem(item['id'].toString()),
+                  onEdit: () => showEditDialog(item),
                 );
               },
             ),
