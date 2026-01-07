@@ -130,26 +130,26 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width; // ✅ RESPONSIVE
+
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // ✅ FIXED APP BAR
       appBar: AppBar(
         backgroundColor: AppColors.primary,
         centerTitle: true,
         elevation: 2,
-        title: const Text(
+        title: Text(
           'Inventory',
           style: TextStyle(
-            color: Colors.white, // ✅ WHITE TITLE
+            color: Colors.white,
+            fontSize: screenWidth * 0.05, // ✅ MEDIAQUERY USED
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
           ),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_outline,
-                color: Colors.white), // ✅ WHITE ICON
+            icon: const Icon(Icons.person_outline, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
@@ -159,7 +159,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ),
         ],
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -199,18 +198,17 @@ class _InventoryScreenState extends State<InventoryScreen> {
                 controller: priceController,
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(labelText: 'Price')),
+
             const SizedBox(height: 20),
 
-            // ✅ FIXED BUTTON
+            // ADD BUTTON
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: addItem,
                 icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text(
-                  'Add Item',
-                  style: TextStyle(color: Colors.white), // ✅ WHITE TEXT
-                ),
+                label: const Text('Add Item',
+                    style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
