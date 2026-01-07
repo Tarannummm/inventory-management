@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/supabase_service.dart';
 import '../reusable_widgets/inventory_item_tile.dart';
+import '../constants/app_colors.dart';
 import 'profile_screen.dart';
 
 class InventoryScreen extends StatefulWidget {
@@ -17,7 +18,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   final TextEditingController priceController = TextEditingController();
 
   List inventoryItems = [];
-  List filteredItems = []; // 🔍 for search
+  List filteredItems = [];
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     setState(() {
       inventoryItems = data;
-      filteredItems = data; // important for search
+      filteredItems = data;
     });
   }
 
@@ -72,10 +73,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     clearFields();
     fetchItems();
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Item updated successfully')),
-    );
   }
 
   void clearFields() {
@@ -94,58 +91,65 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Edit Item'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
+      builder: (_) => AlertDialog(
+        title: const Text('Edit Item'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Item Name'),
-              ),
-              TextField(
+                decoration: const InputDecoration(labelText: 'Item Name')),
+            TextField(
                 controller: categoryController,
-                decoration: const InputDecoration(labelText: 'Category'),
-              ),
-              TextField(
+                decoration: const InputDecoration(labelText: 'Category')),
+            TextField(
                 controller: quantityController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Quantity'),
-              ),
-              TextField(
+                decoration: const InputDecoration(labelText: 'Quantity')),
+            TextField(
                 controller: priceController,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Price'),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                updateItem(item['id'].toString());
-                Navigator.pop(context);
-              },
-              child: const Text('Update'),
-            ),
+                decoration: const InputDecoration(labelText: 'Price')),
           ],
-        );
-      },
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              updateItem(item['id'].toString());
+              Navigator.pop(context);
+            },
+            child: const Text('Update'),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
+
+      // ✅ FIXED APP BAR
       appBar: AppBar(
-        title: const Text('Inventory Management'),
+        backgroundColor: AppColors.primary,
+        centerTitle: true,
+        elevation: 2,
+        title: const Text(
+          'Inventory',
+          style: TextStyle(
+            color: Colors.white, // ✅ WHITE TITLE
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.6,
+          ),
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Icons.person_outline,
+                color: Colors.white), // ✅ WHITE ICON
             onPressed: () {
               Navigator.push(
                 context,
@@ -155,11 +159,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 🔍 SEARCH BAR
+            // SEARCH
             TextField(
               decoration: const InputDecoration(
                 labelText: 'Search Item',
@@ -179,33 +184,43 @@ class _InventoryScreenState extends State<InventoryScreen> {
             ),
             const SizedBox(height: 20),
 
-            // ADD ITEM FIELDS
+            // INPUTS
             TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Item Name'),
-            ),
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Item Name')),
             TextField(
-              controller: categoryController,
-              decoration: const InputDecoration(labelText: 'Category'),
-            ),
+                controller: categoryController,
+                decoration: const InputDecoration(labelText: 'Category')),
             TextField(
-              controller: quantityController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Quantity'),
-            ),
+                controller: quantityController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Quantity')),
             TextField(
-              controller: priceController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(labelText: 'Price'),
-            ),
+                controller: priceController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(labelText: 'Price')),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: addItem,
-              child: const Text('Add Item'),
+
+            // ✅ FIXED BUTTON
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: addItem,
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text(
+                  'Add Item',
+                  style: TextStyle(color: Colors.white), // ✅ WHITE TEXT
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+              ),
             ),
+
             const SizedBox(height: 30),
 
-            // INVENTORY LIST
+            // LIST
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

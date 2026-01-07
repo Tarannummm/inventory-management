@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 
 class InventoryItemTile extends StatelessWidget {
   final String name;
@@ -23,35 +24,96 @@ class InventoryItemTile extends StatelessWidget {
     final bool lowStock = quantity <= 5;
 
     return Card(
-      elevation: 3,
+      color: AppColors.card,
+      elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Column(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Category: $category'),
-            Text('Quantity: $quantity'),
-            Text('Price: ৳$price'),
-            if (lowStock)
+            // 🔹 ITEM NAME + ACTIONS
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: AppColors.accent),
+                      onPressed: onEdit,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: AppColors.danger),
+                      onPressed: onDelete,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 6),
+
+            // 🔹 CATEGORY
+            Row(
+              children: [
+                const Icon(Icons.category_outlined,
+                    size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text('Category: $category'),
+              ],
+            ),
+
+            const SizedBox(height: 4),
+
+            // 🔹 QUANTITY
+            Row(
+              children: [
+                const Icon(Icons.inventory_2_outlined,
+                    size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text(
+                  'Quantity: $quantity',
+                  style: TextStyle(
+                    color: lowStock ? AppColors.danger : Colors.black87,
+                    fontWeight: lowStock ? FontWeight.w600 : FontWeight.normal,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 4),
+
+            // 🔹 PRICE
+            Row(
+              children: [
+                const Icon(Icons.attach_money, size: 16, color: Colors.grey),
+                const SizedBox(width: 6),
+                Text('Price: ৳$price'),
+              ],
+            ),
+
+            // ⚠ LOW STOCK WARNING
+            if (lowStock) ...[
+              const SizedBox(height: 8),
               const Text(
-                '⚠ Low Stock',
-                style:
-                    TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                '⚠ Low stock! Please restock soon.',
+                style: TextStyle(
+                  color: AppColors.danger,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-          ],
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: onEdit,
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: onDelete,
-            ),
+            ],
           ],
         ),
       ),

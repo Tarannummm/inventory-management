@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants/app_colors.dart';
 import '../services/supabase_service.dart';
 import 'login_screen.dart';
 
@@ -8,59 +9,69 @@ class ProfileScreen extends StatelessWidget {
     final user = SupabaseService.client.auth.currentUser;
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Profile'),
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Profile',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'My Profile',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+            Center(
+              child: Text(
+                'My Profile',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
             ),
-
             const SizedBox(height: 30),
-
-            const Text(
-              'Email',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
+            Center(
+              child: const Text(
+                'Email',
+                style: TextStyle(color: Colors.grey),
               ),
             ),
-
             const SizedBox(height: 6),
-
-            Text(
-              user?.email ?? 'No email found',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            Center(
+              child: Text(
+                user?.email ?? 'No email found',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
+            const Spacer(),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.danger,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                onPressed: () async {
+                  await SupabaseService.client.auth.signOut();
 
-            const SizedBox(height: 40),
-
-            // LOGOUT BUTTON
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 45),
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => LoginScreen()),
+                    (route) => false,
+                  );
+                },
+                child: const Text(
+                  'Logout',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
-              onPressed: () async {
-                await SupabaseService.client.auth.signOut();
-
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (_) => LoginScreen()),
-                  (route) => false,
-                );
-              },
-              child: const Text('Logout'),
             ),
           ],
         ),
