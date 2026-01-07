@@ -7,7 +7,7 @@ class AppColors {
   static const Color accent = Color(0xFF7DA0CA); // soft blue
 
   // 🎨 UI COLORS
-  static const Color background = Color(0xFFF4F8FB); // very light blue
+  static const Color background = Color(0xfff4f8fb); // very light blue
   static const Color card = Colors.white;
 
   // ⚠ STATUS COLORS
