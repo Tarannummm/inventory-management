@@ -5,7 +5,5 @@ class SupabaseService {
 
   static const String supabaseKey =
       'sb_publishable_59ItdnLndKYCeOvS1xGn5g_NoOFpA6V';
-
-  // Correct way to access the client
   static get client => Supabase.instance.client;
 }

@@ -35,7 +35,6 @@ class InventoryItemTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 🔹 ITEM NAME + ACTIONS
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -61,10 +60,7 @@ class InventoryItemTile extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 6),
-
-            // 🔹 CATEGORY
             Row(
               children: [
                 const Icon(Icons.category_outlined,
@@ -73,10 +69,7 @@ class InventoryItemTile extends StatelessWidget {
                 Text('Category: $category'),
               ],
             ),
-
             const SizedBox(height: 4),
-
-            // 🔹 QUANTITY
             Row(
               children: [
                 const Icon(Icons.inventory_2_outlined,
@@ -91,10 +84,7 @@ class InventoryItemTile extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 4),
-
-            // 🔹 PRICE
             Row(
               children: [
                 const Icon(Icons.attach_money, size: 16, color: Colors.grey),
@@ -102,8 +92,6 @@ class InventoryItemTile extends StatelessWidget {
                 Text('Price: ৳$price'),
               ],
             ),
-
-            // ⚠ LOW STOCK WARNING
             if (lowStock) ...[
               const SizedBox(height: 8),
               const Text(

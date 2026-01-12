@@ -82,7 +82,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
     priceController.clear();
   }
 
-  // EDIT DIALOG
   void showEditDialog(Map item) {
     nameController.text = item['item_name'];
     categoryController.text = item['category'];
@@ -130,7 +129,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width; // ✅ RESPONSIVE
+    final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -142,7 +141,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
           'Inventory',
           style: TextStyle(
             color: Colors.white,
-            fontSize: screenWidth * 0.05, // ✅ MEDIAQUERY USED
+            fontSize: screenWidth * 0.05,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.6,
           ),
@@ -201,7 +200,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
             const SizedBox(height: 20),
 
-            // ADD BUTTON
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
@@ -218,7 +216,6 @@ class _InventoryScreenState extends State<InventoryScreen> {
 
             const SizedBox(height: 30),
 
-            // LIST
             ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),

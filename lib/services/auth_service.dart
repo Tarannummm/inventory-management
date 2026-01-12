@@ -10,7 +10,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      return null; // success
+      return null;
     } catch (e) {
       return e.toString();
     }
@@ -23,13 +23,12 @@ class AuthService {
         email: email,
         password: password,
       );
-      return null; // success
+      return null;
     } catch (e) {
       return e.toString();
     }
   }
 
-  // LOGOUT (for later)
   Future<void> logout() async {
     await _client.auth.signOut();
   }
